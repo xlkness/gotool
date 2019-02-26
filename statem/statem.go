@@ -126,6 +126,11 @@ func (m *Machine) DelKeyValueTimeout(key interface{}) {
 	m.delKeyValueTimeout(key)
 }
 
+func (m *Machine) GetKeyValueTimeout(key interface{}) (*KVTimeout, bool) {
+	v, f := m.kvTimeouts[key]
+	return v, f
+}
+
 // 跳下一个状态
 func (m *Machine) GotoNext() error {
 	return m.gotoNext(false)
@@ -141,7 +146,9 @@ func (m *Machine) Tick(timeNow int64) error {
 	// check state timeout
 	if timeNow >= m.curStateTimeout && m.curState.state.Next != 0 &&
 		m.curState.state.Timeout != 0 {
-		m.curState.state.ExitCallback(m.curState)
+		if m.curState.state.ExitCallback != nil {
+			m.curState.state.ExitCallback(m.curState)
+		}
 		return m.gotoNext(true)
 	}
 

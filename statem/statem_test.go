@@ -63,6 +63,7 @@ func TestSimpleOpenClose(t *testing.T) {
 		select {
 		case <-ticker.C:
 			soc.sm.Tick(timeNow.Unix())
+		default:
 		}
 		fmt.Printf("tick .. \n")
 	}
