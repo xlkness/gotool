@@ -1,2 +1,2 @@
 = statm
-	finite state machine
+finite state machine
