@@ -1,1 +1,2 @@
-statm:finite state machine
+= statm
+	finite state machine
