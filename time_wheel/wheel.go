@@ -3,7 +3,6 @@ package time_wheel
 import (
 	"container/list"
 	"context"
-	"fmt"
 	"sync"
 	"time"
 )
@@ -59,6 +58,11 @@ func NewAndRun(slotNum int32, tick time.Duration, workerPoolNum int32) *Wheel {
 	return timeWheel
 }
 
+// 停止时间轮
+func (tw *Wheel) Stop() {
+	tw.cancelFun()
+}
+
 func (tw *Wheel) Add(key interface{}, timeout time.Duration, t *Task) {
 	addTimer := &Timer{timeout: timeout, task: t, timeoutTs: time.Now().Add(timeout).Unix()}
 	tw.customEventChan <- &customEvent{
@@ -97,15 +101,11 @@ func (tw *Wheel) run() {
 					tw.del(event.key)
 				}
 			case <-ctx.Done():
+				//fmt.Printf("time wheel stop..\n")
 				return
 			}
 		}
 	}()
-}
-
-// 停止时间轮
-func (tw *Wheel) stop() {
-	tw.cancelFun()
 }
 
 // 滴答，并超时槽上的定时器
@@ -140,7 +140,7 @@ func (tw *Wheel) add(key interface{}, addTimer *Timer) {
 		// 计算定时器所属槽
 		insertSlot = (int32(addTimer.timeout/tw.tickDuration) + tw.curSlot) % tw.slotNum
 	}
-	fmt.Printf("cur slot:%v\n", insertSlot)
+	//fmt.Printf("cur slot:%v\n", insertSlot)
 	// 添加定时器到对应槽
 	elem := tw.slots[insertSlot].add(addTimer)
 

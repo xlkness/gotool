@@ -11,7 +11,7 @@ type Task struct {
 
 func startWorkerPool(num int32, taskChan <-chan *Task, ctx context.Context) {
 	for i := 0; i < int(num); i++ {
-		go func(_ int) {
+		go func(no int) {
 			for {
 				select {
 				case task, ok := <-taskChan:
@@ -21,6 +21,7 @@ func startWorkerPool(num int32, taskChan <-chan *Task, ctx context.Context) {
 					//fmt.Printf("exec by:%v\n", no)
 					task.F(task.A)
 				case <-ctx.Done():
+					//fmt.Printf("%v routine stop...\n", no)
 					return
 				}
 			}
