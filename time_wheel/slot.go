@@ -2,23 +2,23 @@ package time_wheel
 
 import "container/list"
 
-type Slot struct {
+type slot struct {
 	num   int32
 	slots *list.List
 }
 
-func NewSlot() *Slot {
-	return &Slot{
+func NewSlot() *slot {
+	return &slot{
 		slots: list.New(),
 	}
 }
 
 // 槽上添加定时器，根据超时时间做插入排序
-func (s *Slot) add(t *Timer) *list.Element {
+func (s *slot) add(t *timer) *list.Element {
 	tmp := s.slots.Front()
 	var elem *list.Element
 	for tmp != nil {
-		if tmp.Value.(*Timer).timeoutTs > t.timeoutTs {
+		if tmp.Value.(*timer).timeoutTs > t.timeoutTs {
 			elem = s.slots.InsertBefore(t, tmp)
 			break
 		}
@@ -31,7 +31,7 @@ func (s *Slot) add(t *Timer) *list.Element {
 	return elem
 }
 
-func (s *Slot) del(t *list.Element) {
+func (s *slot) del(t *list.Element) {
 	if t != nil {
 		s.slots.Remove(t)
 		s.num--
@@ -39,20 +39,20 @@ func (s *Slot) del(t *list.Element) {
 }
 
 // 查看头定时器
-func (s *Slot) front() *Timer {
+func (s *slot) front() *timer {
 	front := s.slots.Front()
 	if front != nil {
-		return front.Value.(*Timer)
+		return front.Value.(*timer)
 	}
 	return nil
 }
 
 // 出队列头定时器
-func (s *Slot) pop() *Timer {
+func (s *slot) pop() *timer {
 	front := s.slots.Front()
 	if front != nil {
 		s.slots.Remove(front)
 		s.num--
 	}
-	return front.Value.(*Timer)
+	return front.Value.(*timer)
 }

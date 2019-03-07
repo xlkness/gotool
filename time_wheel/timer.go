@@ -2,7 +2,7 @@ package time_wheel
 
 import "time"
 
-type Timer struct {
+type timer struct {
 	// 主键，用来删除定时器
 	key interface{}
 	// 超时时间间隔

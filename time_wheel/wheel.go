@@ -26,7 +26,7 @@ type Wheel struct {
 	// 滴答间隔
 	tickDuration time.Duration
 	// 槽
-	slots           []*Slot
+	slots           []*slot
 	taskDeliverChan chan *Task
 	// 任务工作池数量
 	workerPoolNum int32
@@ -46,7 +46,7 @@ func NewAndRun(slotNum int32, tick time.Duration, workerPoolNum int32) *Wheel {
 		slotNum:         slotNum,
 		tickDuration:    tick,
 		taskDeliverChan: make(chan *Task, 32),
-		slots:           make([]*Slot, slotNum),
+		slots:           make([]*slot, slotNum),
 		workerPoolNum:   workerPoolNum,
 		timersManager:   &sync.Map{},
 		customEventChan: make(chan *customEvent, 16),
@@ -64,7 +64,7 @@ func (tw *Wheel) Stop() {
 }
 
 func (tw *Wheel) Add(key interface{}, timeout time.Duration, t *Task) {
-	addTimer := &Timer{timeout: timeout, task: t, timeoutTs: time.Now().Add(timeout).Unix()}
+	addTimer := &timer{timeout: timeout, task: t, timeoutTs: time.Now().Add(timeout).Unix()}
 	tw.customEventChan <- &customEvent{
 		op:    1,
 		key:   key,
@@ -96,7 +96,7 @@ func (tw *Wheel) run() {
 				tw.tick()
 			case event := <-tw.customEventChan:
 				if event.op == 1 {
-					tw.add(event.key, event.value.(*Timer))
+					tw.add(event.key, event.value.(*timer))
 				} else if event.op == 2 {
 					tw.del(event.key)
 				}
@@ -132,7 +132,7 @@ func (tw *Wheel) tick() {
 	tw.curSlot = tw.curSlot % tw.slotNum
 }
 
-func (tw *Wheel) add(key interface{}, addTimer *Timer) {
+func (tw *Wheel) add(key interface{}, addTimer *timer) {
 	insertSlot := tw.curSlot
 	if addTimer.timeout < tw.tickDuration {
 		insertSlot = tw.curSlot
