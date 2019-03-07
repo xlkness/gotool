@@ -52,7 +52,7 @@ func NewAndRun(slotNum int32, tick time.Duration, workerPoolNum int32) *Wheel {
 		customEventChan: make(chan *customEvent, 16),
 	}
 	for i := 0; i < int(slotNum); i++ {
-		timeWheel.slots[i] = NewSlot()
+		timeWheel.slots[i] = newSlot()
 	}
 	timeWheel.run()
 	return timeWheel

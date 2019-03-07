@@ -7,7 +7,7 @@ type slot struct {
 	slots *list.List
 }
 
-func NewSlot() *slot {
+func newSlot() *slot {
 	return &slot{
 		slots: list.New(),
 	}
