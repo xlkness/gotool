@@ -1,0 +1,30 @@
+package time_heap
+
+import (
+	"context"
+)
+
+type Task struct {
+	F func(interface{})
+	A interface{}
+}
+
+func startWorkerPool(num int, taskChan <-chan *Task, ctx context.Context) {
+	for i := 0; i < int(num); i++ {
+		go func(no int) {
+			for {
+				select {
+				case task, ok := <-taskChan:
+					if !ok {
+						return
+					}
+					//fmt.Printf("exec by:%v\n", no)
+					task.F(task.A)
+				case <-ctx.Done():
+					//fmt.Printf("%v routine stop...\n", no)
+					return
+				}
+			}
+		}(i)
+	}
+}

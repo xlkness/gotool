@@ -45,7 +45,7 @@ func NewAndRun(slotNum int32, tick time.Duration, workerPoolNum int32) *Wheel {
 	timeWheel := &Wheel{
 		slotNum:         slotNum,
 		tickDuration:    tick,
-		taskDeliverChan: make(chan *Task, 32),
+		taskDeliverChan: make(chan *Task, workerPoolNum*2),
 		slots:           make([]*slot, slotNum),
 		workerPoolNum:   workerPoolNum,
 		timersManager:   &sync.Map{},
