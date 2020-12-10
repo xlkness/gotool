@@ -9,7 +9,7 @@ import (
 
 type Heap struct {
 	timers          *timersHeap
-	mu              *sync.Mutex
+	mu              sync.Mutex
 	chWakeUp        chan struct{}
 	workerPoolNum   int
 	taskDeliverChan chan *Task
